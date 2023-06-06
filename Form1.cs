@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +23,10 @@ namespace Zooma_Project
         Curve MainCurve = new Curve();
         List<PointF> CurvePoints = new List<PointF>();
         List<Ball> Balls = new List<Ball>();
+        Ball ShootingBall;
+        bool ShootingProg = false;
+        float XStart, XEnd, YStart, YEnd, DX, DY, M;
+        int ExtraBall = 0;
         int TickCounter = 0;
         public Form1()
         {
@@ -30,6 +35,15 @@ namespace Zooma_Project
             this.Paint += Form1_Paint;
             T.Tick += T_Tick;
             this.MouseMove += Form1_MouseMove;
+            this.MouseDown += Form1_MouseDown;
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                Shoot(e.Location);
+            }
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
@@ -41,11 +55,16 @@ namespace Zooma_Project
 
         private void T_Tick(object sender, EventArgs e)
         {
-            if(TickCounter % 20 == 0 && Balls.Count <30)
+            if(TickCounter % 25 == 0 && Balls.Count + ExtraBall <=5)
             {
                 Balls.Add(new Ball(CurvePoints[0]));
             }
             MoveBalls();
+            if(ShootingProg)
+            {
+                MoveShootingBall();
+                ShootingBallCollision();
+            }
             TickCounter++;
             DoubleBuffer(this.CreateGraphics());
         }
@@ -69,30 +88,215 @@ namespace Zooma_Project
                 CurvePoints.Add(pnn);
             }
             Balls.Add(new Ball(CurvePoints[0]));
+            ShootingBall = new Ball(new Point(295, 290));
             T.Interval = 1;
             T.Start();
         }
-        void RotateHeroToCursor(Point CursorLocation)
-        {
-            
-        }
         void MoveBalls()
         {
-            for (int i = 0; i < Balls.Count; i++)
+            Balls[Balls.Count - 1].ChangePosition(CurvePoints[Balls[Balls.Count - 1].CurveIndex]);
+            Balls[Balls.Count - 1].CurveIndex += 3;
+            for (int i = Balls.Count - 2; i >= 0; i--)
             {
-                Balls[i].ChangePosition(CurvePoints[Balls[i].CurveIndex]);
-                Balls[i].CurveIndex+=3;
+                if (Balls[i].CurveIndex > Balls[i + 1].CurveIndex + 65)
+                {
+                    continue;
+                }
+                else
+                {
+                    Balls[i].ChangePosition(CurvePoints[Balls[i].CurveIndex]);
+                    Balls[i].CurveIndex += 3;
+                }
+                
+            }
+        }
+        void Shoot(PointF p)
+        {
+            ShootingProg = true;
+            XStart = 295;
+            XEnd = p.X;
+            YStart = 290;
+            YEnd = p.Y;
+            DX = XEnd - XStart;
+            DY = YEnd - YStart;
+            M = DY / DX;
+        }
+        void MoveShootingBall()
+        {
+            if (Math.Abs(DY) > Math.Abs(DX))
+            {
+                if (XStart < XEnd && YStart < YEnd)
+                {
+                    ShootingBall.Position.X += (1 / M)*2;
+                    ShootingBall.Position.Y += 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position,ShootingBall.Rect.Size);
+                }
+                else if (XStart > XEnd && YStart > YEnd)
+                {
+                    ShootingBall.Position.X -= (1 / M) * 2;
+                    ShootingBall.Position.Y -= 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+
+                }
+                else if (XStart < XEnd && YStart > YEnd)
+                {
+                    ShootingBall.Position.X -= (1 / M) * 2;
+                    ShootingBall.Position.Y -= 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+                }
+                else if (XStart > XEnd && YStart < YEnd)
+                {
+                    ShootingBall.Position.X += (1 / M) * 2;
+                    ShootingBall.Position.Y += 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+                }
+            }
+            else
+            {
+                if (XStart < XEnd && YStart < YEnd)
+                {
+                    ShootingBall.Position.X += 2;
+                    ShootingBall.Position.Y += M * 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+                }
+                else if (XStart > XEnd && YStart > YEnd)
+                {
+                    ShootingBall.Position.X -= 2;
+                    ShootingBall.Position.Y -= M * 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+                }
+                else if (XStart < XEnd && YStart > YEnd)
+                {
+                    ShootingBall.Position.X += 2;
+                    ShootingBall.Position.Y += M * 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+                }
+                else if (XStart > XEnd && YStart < YEnd)
+                {
+                    ShootingBall.Position.X -= 2;
+                    ShootingBall.Position.Y -= M * 2;
+                    ShootingBall.Rect = new RectangleF(ShootingBall.Position, ShootingBall.Rect.Size);
+                }
+            }
+        }
+        void ShootingBallCollision()
+        {
+            if(ShootingBall.Position.X > this.ClientSize.Width || ShootingBall.Position.X < 0)
+            {
+                ShootingProg = false;
+                ShootingBall = new Ball(new Point(295, 290));
+                return;
+            }
+            if(ShootingBall.Position.Y > this.ClientSize.Height || ShootingBall.Position.Y < 0)
+            {
+                ShootingProg = false;
+                ShootingBall = new Ball(new Point(295, 290));
+                return;
+            }
+            for(int i=0;i<Balls.Count;i++)
+            {
+                if (ShootingBall.Rect.IntersectsWith(Balls[i].Rect))
+                {
+                    Console.WriteLine("Made Intersection with ball : " + i.ToString());
+                    ShootingBall.CurveIndex = Balls[i].CurveIndex;
+                    for(int k =0;k<Balls.Count;k++)
+                    {
+                        Console.WriteLine(Balls[k].Type.ToString());
+                    }
+                    Console.WriteLine("Stop");
+                    Balls.Insert(i, ShootingBall);
+                    for (int k = 0; k < Balls.Count; k++)
+                    {
+                        Console.WriteLine(Balls[k].Type.ToString());
+                    }
+                    ShootingProg = false;
+                    ShootingBall = new Ball(new Point(295, 290));
+                    FixSpacing(i);
+                    return;
+                }
+            }
+        }
+        void FixSpacing(int index)
+        {
+            for(int i = index + 1; i <Balls.Count;i++)
+            {
+                if (Balls[i].CurveIndex - 60 >= 0)
+                {
+                    Balls[i].CurveIndex -= 60;
+                }
+                else
+                {
+                    Balls.RemoveAt(i);
+                    ExtraBall++;
+                }
+            }
+            CheckForCollisionOfSameType(index);
+        }
+        void CheckForCollisionOfSameType(int index)
+        {
+            int left = index - 1;
+            int right = index + 2;
+            int leftindex = -1;
+            int rightindex = -1;
+            for(int i = left;i>0;i--)
+            {
+                if (Balls[i].Type == Balls[index].Type)
+                {
+                    leftindex = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            for(int i = right;i<Balls.Count;i++)
+            {
+                if (Balls[i].Type == Balls[index].Type)
+                {
+                    rightindex = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if(leftindex != -1 && rightindex != -1)
+            {
+                if(Math.Abs(leftindex - rightindex) + 1 >= 3)
+                {
+                    for (int i = leftindex; i < rightindex; i++)
+                    {
+                        Balls.RemoveAt(i);
+                    }
+                }
+            }
+            else if(rightindex != -1 && Math.Abs(rightindex - index) + 1 >= 3)
+            {
+                for(int i=index;i<rightindex;i++)
+                {
+                    Balls.RemoveAt(i);
+                }
+            }
+            else if(leftindex != -1 && Math.Abs(leftindex-index) + 1 >=3)
+            {
+                for(int i = leftindex;i <index;i++)
+                {
+                    Balls.RemoveAt(i);
+                }
             }
         }
         void DrawScene(Graphics g)
         {
             g.Clear(Color.White);
             g.DrawImage(BackGround, 0, 0);
-            MainCurve.DrawCurve(g);
+           // MainCurve.DrawCurve(g);
             for(int i=0;i<Balls.Count;i++)
             {
                 Balls[i].Draw(g);
+                Balls[i].DrawRect(g);
             }
+            ShootingBall.Draw(g);
+            ShootingBall.DrawRect(g);
             g.TranslateTransform(295, 290);
             g.RotateTransform(angle * 180 / (float)Math.PI);
             g.DrawImage(ZumaHero, -ZumaHero.Width / 2, -ZumaHero.Height / 2);

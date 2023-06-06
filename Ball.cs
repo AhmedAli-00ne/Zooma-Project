@@ -9,9 +9,10 @@ namespace Zooma_Project
 {
     internal class Ball
     {
-        Bitmap Img;
-        PointF Position;
-        int Type;
+        public Bitmap Img;
+        public PointF Position;
+        public RectangleF Rect;
+        public int Type;
         public int CurveIndex;
         Random R = new Random();
         public Ball(PointF p)
@@ -43,6 +44,7 @@ namespace Zooma_Project
             }
             Position = p;
             CurveIndex = 0;
+            Rect = new RectangleF(p, new Size(Img.Width, Img.Height));
         }
         public void ChangePosition(PointF pos)
         {
@@ -51,10 +53,15 @@ namespace Zooma_Project
             p.X = pos.X - 5;
             p.Y = pos.Y - 5;
             Position = p;
+            Rect = new RectangleF(p, new Size(Img.Width, Img.Height));
         }
         public void Draw(Graphics g)
         {
             g.DrawImage(Img, Position);
+        }
+        public void DrawRect(Graphics g)
+        {
+            g.DrawRectangle(Pens.Red, (int)Rect.X,(int)Rect.Y,(int)Rect.Width,(int)Rect.Height);
         }
     }
 }
