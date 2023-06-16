@@ -11,7 +11,7 @@ namespace Zooma_Project
     {
         public List<Point> ControlPoints;
 
-        public float t_inc = 0.001f;
+        public float t_inc = 0.00001f;
 
         public Color cl = Color.Red;
         public Color clr1 = Color.Black;

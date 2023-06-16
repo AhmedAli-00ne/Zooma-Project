@@ -15,6 +15,7 @@ namespace Zooma_Project
         public int Type;
         public int CurveIndex;
         Random R = new Random();
+        public Pen pp = new Pen(Brushes.Red);
         public Ball(PointF p)
         {
             Type = R.Next(0, 4);
@@ -61,7 +62,7 @@ namespace Zooma_Project
         }
         public void DrawRect(Graphics g)
         {
-            g.DrawRectangle(Pens.Red, (int)Rect.X,(int)Rect.Y,(int)Rect.Width,(int)Rect.Height);
+            g.DrawRectangle(pp, (int)Rect.X,(int)Rect.Y,(int)Rect.Width,(int)Rect.Height);
         }
     }
 }
