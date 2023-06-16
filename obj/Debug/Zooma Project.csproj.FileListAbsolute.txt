@@ -1,0 +1,11 @@
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\bin\Debug\Zooma Project.exe.config
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\bin\Debug\Zooma Project.exe
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\bin\Debug\Zooma Project.pdb
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma Project.csproj.AssemblyReference.cache
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma Project.csproj.SuggestedBindingRedirects.cache
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma_Project.Properties.Resources.resources
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma Project.csproj.GenerateResource.cache
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma Project.csproj.CoreCompileInputs.cache
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma Project.exe
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma Project.pdb
+C:\Users\ahmed\OneDrive\Desktop\HMS\Zooma Project\obj\Debug\Zooma_Project.Form1.resources
